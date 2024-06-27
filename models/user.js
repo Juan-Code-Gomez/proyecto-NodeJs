@@ -13,8 +13,8 @@ const User = sequelize.define('User', {
     }
 });
 
-sequelize.sync()
-    .then(() => console.log('User table has been created, if one doesn\'t exist'))
-    .catch(error => console.log('This error occurred:', error));
+// sequelize.sync({ alter: false })
+//     .then(() => console.log('User table has been created, if one doesn\'t exist'))
+//     .catch(error => console.log('This error occurred:', error));
 
 module.exports = User;

@@ -4,28 +4,26 @@ const bcrypt = require("bcryptjs");
 
 const SECRET_KEY = "your_secret_key";
 
-// const login = async (req, res) => {
-//   const { username, password } = req.body;
+const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(400).send({ message: "Credenciales invalidas" });
+    }
 
-//   try {
-//     const user = await User.findeOne({ where: { username } });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).send({ message: "Credenciales invalidas" });
+    }
 
-//     if (!user) {
-//       return res.status(400).send({ message: "Credenciales invalidas" });
-//     }
+    const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
-//     if (!isPasswordValid) {
-//       return res.status(400).send({ message: "Credenciales invalidas" });
-//     }
-
-//     const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "1h" });
-
-//     res.send({ message: "Login successful", token });
-//   } catch (error) {
-//     res.status(500).send({ message: "Error logging in", error });
-//   }
-// };
+    res.send({ message: "Inicio exitoso", token });
+  } catch (error) {
+    res.status(500).send({ message: "Error al momento de loguear", error });
+  }
+};
 
 const register = async (req, res) => {
   const { username, password } = req.body;
@@ -50,4 +48,5 @@ const register = async (req, res) => {
 
 module.exports = {
   register,
+  login
 };
